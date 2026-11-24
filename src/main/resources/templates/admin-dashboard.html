@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | Blossom Craft</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #fff8fa;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        .main-header {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 35px;
+            background: white;
+            border-bottom: 1px solid #f1dfe4;
+            position: relative;
+            z-index: 100;
+        }
+
+        .brand {
+            text-decoration: none;
+            color: #593c46;
+        }
+
+        .brand-name {
+            display: block;
+            font-size: 21px;
+            font-weight: bold;
+        }
+
+        .brand-tagline {
+            display: block;
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-top: 4px;
+        }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .main-nav a {
+            text-decoration: none;
+            color: #593c46;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .main-nav a:hover {
+            color: #bd7188;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-icons > a {
+            text-decoration: none;
+            color: #593c46;
+            font-size: 20px;
+        }
+
+        /* DASHBOARD LAYOUT */
+        .dashboard-layout {
+            display: flex;
+            min-height: calc(100vh - 75px);
+        }
+
+        .sidebar {
+            width: 240px;
+            background: #593c46;
+            color: white;
+            padding: 30px 18px;
+            min-height: calc(100vh - 75px);
+        }
+
+        .sidebar-brand {
+            text-align: center;
+            font-size: 23px;
+            margin-bottom: 40px;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 14px 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: #bd7188;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 35px;
+        }
+
+        .top-heading {
+            color: #593c46;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text {
+            color: #806b72;
+            margin-bottom: 35px;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .dashboard-card {
+            background: white;
+            padding: 28px;
+            border-radius: 14px;
+            border: 1px solid #f1dfe4;
+            box-shadow: 0 4px 15px rgba(89, 60, 70, 0.05);
+        }
+
+        .dashboard-card h3 {
+            color: #593c46;
+            margin-bottom: 12px;
+        }
+
+        .dashboard-card p {
+            color: #806b72;
+            line-height: 1.6;
+        }
+
+        @media(max-width: 900px) {
+            .main-header {
+                flex-wrap: wrap;
+                gap: 15px;
+                padding: 15px 20px;
+            }
+
+            .main-nav {
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+        }
+
+        @media(max-width: 700px) {
+            .dashboard-layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+            }
+
+            .sidebar a {
+                display: inline-block;
+                margin: 3px;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .main-content {
+                padding: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CUSTOMER NAVBAR -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <div class="dashboard-layout">
+
+        <!-- ADMIN SIDEBAR -->
+        <aside class="sidebar">
+
+            <h2 class="sidebar-brand">🌸 Blossom Craft</h2>
+
+            <a th:href="@{/admin/dashboard}" class="active">
+                🏠 Dashboard
+            </a>
+
+            <a th:href="@{/manage-products}">
+                📦 Manage Products
+            </a>
+
+            <a th:href="@{/add-product}">
+                ➕ Add Product
+            </a>
+
+            <a th:href="@{/admin/orders}">
+                🛍️ Manage Orders
+            </a>
+
+            <a th:href="@{/admin/logout}">
+                ↪ Logout
+            </a>
+
+        </aside>
+
+        <!-- DASHBOARD CONTENT -->
+        <main class="main-content">
+
+            <h1 class="top-heading">Admin Dashboard</h1>
+
+            <p class="welcome-text">
+                Welcome to Blossom Craft Admin Panel 🌸
+            </p>
+
+            <div class="dashboard-cards">
+
+                <div class="dashboard-card">
+                    <h3>📦 Manage Products</h3>
+                    <p>View, edit and delete your handmade products.</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>➕ Add Product</h3>
+                    <p>Upload new handmade products to your shop.</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>🛍️ Manage Orders</h3>
+                    <p>View customer orders and update their status.</p>
+                </div>
+
+                <div class="dashboard-card">
+                    <h3>🌸 Blossom Craft</h3>
+                    <p>Manage your handmade collection in one place.</p>
+                </div>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Cart | Blossom Craft</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .cart-banner {
+            text-align: center;
+            padding: 55px 20px;
+            background: linear-gradient(120deg, #fff0f3, #fff9f2);
+        }
+
+        .cart-banner h1 {
+            color: #593c46;
+            font-size: 36px;
+        }
+
+        .cart-banner p {
+            color: #806b72;
+        }
+
+        .cart-container {
+            max-width: 1050px;
+            margin: 45px auto;
+            padding: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            padding: 22px;
+            margin-bottom: 18px;
+            border: 1px solid #f1dfe4;
+            border-radius: 15px;
+            background: white;
+            flex-wrap: wrap;
+        }
+
+        .cart-product-image {
+            width: 125px;
+            height: 125px;
+            object-fit: contain;
+            padding: 5px;
+            border-radius: 12px;
+            background: #fff0f3;
+            flex-shrink: 0;
+        }
+
+        .cart-placeholder {
+            width: 125px;
+            height: 125px;
+            border-radius: 12px;
+            background: #fff0f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+
+        .cart-details {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .cart-item h3 {
+            color: #593c46;
+            margin: 0 0 8px;
+        }
+
+        .cart-item p {
+            color: #bd7188;
+            margin: 6px 0;
+        }
+
+        .product-description {
+            color: #806b72 !important;
+            font-size: 14px;
+            line-height: 1.6;
+            margin: 8px 0 12px !important;
+            overflow-wrap: anywhere;
+        }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quantity-controls button {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background: #fff0f3;
+            color: #96546b;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .quantity-controls button:hover {
+            background: #f5dce4;
+        }
+
+        .remove-btn {
+            border: none;
+            background: transparent;
+            color: #c34f65;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .cart-summary {
+            background: #fff8f8;
+            border: 1px solid #f1dfe4;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            color: #593c46;
+        }
+
+        .total-row {
+            font-size: 22px;
+            font-weight: bold;
+            border-top: 1px solid #ead5dc;
+            padding-top: 18px;
+        }
+
+        .cart-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .shop-btn,
+        .checkout-btn {
+            display: inline-block;
+            padding: 13px 25px;
+            border-radius: 30px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .shop-btn {
+            background: #fff0f3;
+            color: #96546b;
+        }
+
+        .checkout-btn {
+            background: #bd7188;
+            color: white;
+        }
+
+        .checkout-btn:hover {
+            background: #96546b;
+        }
+
+        .cart-empty {
+            text-align: center;
+            padding: 65px 20px;
+            background: #fff8f8;
+            border: 1px solid #f1dfe4;
+            border-radius: 18px;
+        }
+
+        .cart-icon {
+            font-size: 75px;
+        }
+
+        .cart-empty h2 {
+            color: #593c46;
+            margin: 20px 0 10px;
+        }
+
+        .cart-empty p {
+            color: #806b72;
+            line-height: 1.8;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media(max-width: 600px) {
+            .cart-item {
+                align-items: flex-start;
+            }
+
+            .cart-product-image,
+            .cart-placeholder {
+                width: 100px;
+                height: 100px;
+            }
+
+            .cart-buttons {
+                flex-direction: column;
+            }
+
+            .shop-btn,
+            .checkout-btn {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SHARED NAVBAR -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <!-- CART BANNER -->
+    <section class="cart-banner">
+        <h1>My Shopping Cart 🛒</h1>
+        <p>Your handmade favourites, ready for checkout.</p>
+    </section>
+
+    <main class="cart-container">
+
+        <!-- EMPTY CART -->
+        <div class="cart-empty hidden" id="empty-cart">
+
+            <div class="cart-icon">🛍️</div>
+
+            <h2>Your Cart is Empty</h2>
+
+            <p>
+                You haven't added anything to your cart yet.
+                Explore our handmade collection and find
+                something special.
+            </p>
+
+            <a th:href="@{/shop}" class="shop-btn">
+                Continue Shopping
+            </a>
+
+        </div>
+
+        <!-- CART ITEMS -->
+        <div id="cart-items"></div>
+
+        <!-- CART SUMMARY -->
+        <div class="cart-summary hidden" id="cart-summary">
+
+            <h2 style="color:#593c46;">Order Summary</h2>
+
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <strong id="subtotal">₹0</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>Delivery</span>
+                <strong>Free</strong>
+            </div>
+
+            <div class="summary-row total-row">
+                <span>Total</span>
+                <strong id="total">₹0</strong>
+            </div>
+
+            <div class="cart-buttons">
+
+                <a th:href="@{/shop}" class="shop-btn">
+                    Continue Shopping
+                </a>
+
+                <a th:href="@{/checkout}" class="checkout-btn">
+                    Proceed to Checkout →
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- SHARED FOOTER -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- CART JAVASCRIPT -->
+    <script>
+
+        // GET CART DATA
+        function getCart() {
+            try {
+                const cart = JSON.parse(localStorage.getItem("cart")) || [];
+                return Array.isArray(cart) ? cart : [];
+            } catch (error) {
+                return [];
+            }
+        }
+
+        // SAVE CART DATA
+        function saveCart(cart) {
+            localStorage.setItem("cart", JSON.stringify(cart));
+        }
+
+        // DISPLAY CART
+        function displayCart() {
+
+            let cart = getCart();
+
+            let container = document.getElementById("cart-items");
+            let emptyCart = document.getElementById("empty-cart");
+            let summary = document.getElementById("cart-summary");
+
+            container.innerHTML = "";
+
+            if (cart.length === 0) {
+
+                emptyCart.classList.remove("hidden");
+                summary.classList.add("hidden");
+
+                return;
+            }
+
+            emptyCart.classList.add("hidden");
+            summary.classList.remove("hidden");
+
+            let total = 0;
+
+            cart.forEach((item, index) => {
+
+                let price = Number(item.price) || 0;
+                let quantityValue = Math.max(1, Number(item.quantity) || 1);
+
+                let itemTotal = price * quantityValue;
+
+                total += itemTotal;
+
+                // PRODUCT CARD
+                let card = document.createElement("div");
+                card.className = "cart-item";
+
+                // PRODUCT IMAGE
+                if (item.image) {
+
+                    let image = document.createElement("img");
+
+                    image.src = item.image;
+                    image.alt = item.name || "Product";
+                    image.className = "cart-product-image";
+
+                    card.appendChild(image);
+
+                } else {
+
+                    let placeholder = document.createElement("div");
+
+                    placeholder.className = "cart-placeholder";
+                    placeholder.textContent = "🌸";
+
+                    card.appendChild(placeholder);
+                }
+
+                // PRODUCT DETAILS
+                let details = document.createElement("div");
+
+                details.className = "cart-details";
+
+                let name = document.createElement("h3");
+                name.textContent = item.name || "Handmade Product";
+
+                // PRODUCT DESCRIPTION
+                let description = document.createElement("p");
+
+                description.className = "product-description";
+                description.textContent =
+                    item.description || "Beautiful handmade product.";
+
+                let priceText = document.createElement("p");
+                priceText.textContent = "Price: ₹" + price;
+
+                let subtotalText = document.createElement("p");
+                subtotalText.textContent = "Subtotal: ₹" + itemTotal;
+
+                details.appendChild(name);
+                details.appendChild(description);
+                details.appendChild(priceText);
+                details.appendChild(subtotalText);
+
+                // QUANTITY CONTROLS
+                let quantity = document.createElement("div");
+
+                quantity.className = "quantity-controls";
+
+                let minus = document.createElement("button");
+
+                minus.textContent = "−";
+                minus.type = "button";
+                minus.setAttribute("aria-label", "Decrease quantity");
+                minus.onclick = () => changeQuantity(index, -1);
+
+                let quantityNumber = document.createElement("strong");
+
+                quantityNumber.textContent = quantityValue;
+
+                let plus = document.createElement("button");
+
+                plus.textContent = "+";
+                plus.type = "button";
+                plus.setAttribute("aria-label", "Increase quantity");
+                plus.onclick = () => changeQuantity(index, 1);
+
+                quantity.appendChild(minus);
+                quantity.appendChild(quantityNumber);
+                quantity.appendChild(plus);
+
+                // REMOVE BUTTON
+                let remove = document.createElement("button");
+
+                remove.className = "remove-btn";
+                remove.textContent = "Remove";
+                remove.type = "button";
+                remove.onclick = () => removeItem(index);
+
+                // ADD ELEMENTS
+                card.appendChild(details);
+                card.appendChild(quantity);
+                card.appendChild(remove);
+
+                container.appendChild(card);
+
+            });
+
+            // UPDATE TOTAL
+            document.getElementById("subtotal").textContent = "₹" + total;
+            document.getElementById("total").textContent = "₹" + total;
+
+        }
+
+        // CHANGE QUANTITY
+        function changeQuantity(index, change) {
+
+            let cart = getCart();
+
+            if (!cart[index]) return;
+
+            let newQuantity =
+                (Number(cart[index].quantity) || 1) + change;
+
+            if (newQuantity <= 0) {
+                cart.splice(index, 1);
+            } else {
+                cart[index].quantity = newQuantity;
+            }
+
+            saveCart(cart);
+
+            displayCart();
+
+        }
+
+        // REMOVE PRODUCT
+        function removeItem(index) {
+
+            let cart = getCart();
+
+            if (index < 0 || index >= cart.length) return;
+
+            cart.splice(index, 1);
+
+            saveCart(cart);
+
+            displayCart();
+
+        }
+
+        // LOAD CART WHEN PAGE OPENS
+        document.addEventListener("DOMContentLoaded", displayCart);
+
+    </script>
+
+</body>
+</html>

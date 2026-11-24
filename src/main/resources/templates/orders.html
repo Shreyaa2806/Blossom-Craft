@@ -1,0 +1,511 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders | Blossom Craft</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+
+    <style>
+        .orders-banner {
+            text-align: center;
+            padding: 55px 20px;
+            background: #fff0f3;
+        }
+
+        .orders-banner h1 {
+            color: #593c46;
+            font-size: 36px;
+        }
+
+        .orders-container {
+            max-width: 1000px;
+            margin: 45px auto;
+            padding: 20px;
+        }
+
+        .order-card {
+            background: white;
+            border: 1px solid #f1dfe4;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            border-bottom: 1px solid #f1dfe4;
+            padding-bottom: 15px;
+        }
+
+        .order-header h3 {
+            color: #593c46;
+            margin: 0;
+        }
+
+        .order-status {
+            color: #bd7188;
+            font-weight: bold;
+        }
+
+        .order-details {
+            color: #806b72;
+            line-height: 1.9;
+            margin-top: 15px;
+        }
+
+        .payment-info {
+            background: #fff0f3;
+            border: 1px solid #f1dfe4;
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-top: 18px;
+            color: #593c46;
+        }
+
+        .payment-value {
+            color: #bd7188;
+            font-weight: bold;
+        }
+
+        .order-total {
+            color: #bd7188;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .tracking-heading {
+            color: #593c46;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .tracking-container {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 30px 5px;
+            gap: 5px;
+        }
+
+        .tracking-container::before {
+            content: "";
+            position: absolute;
+            top: 17px;
+            left: 12%;
+            right: 12%;
+            height: 4px;
+            background: #f1dfe4;
+            z-index: 0;
+        }
+
+        .tracking-step {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            text-align: center;
+        }
+
+        .tracking-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #f1dfe4;
+            color: #806b72;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            border: 3px solid white;
+        }
+
+        .tracking-step.completed .tracking-circle,
+        .tracking-step.active .tracking-circle {
+            background: #bd7188;
+            color: white;
+        }
+
+        .tracking-step p {
+            color: #806b72;
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .tracking-step.completed p,
+        .tracking-step.active p {
+            color: #bd7188;
+            font-weight: bold;
+        }
+
+        .product-heading {
+            color: #593c46;
+            margin-top: 25px;
+            border-top: 1px solid #f1dfe4;
+            padding-top: 20px;
+        }
+
+        .order-product {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 15px 0;
+            border-bottom: 1px solid #f1dfe4;
+        }
+
+        .order-product img,
+        .product-placeholder {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 12px;
+            background: #fff0f3;
+            flex-shrink: 0;
+        }
+
+        .product-placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 35px;
+        }
+
+        .product-info h4 {
+            color: #593c46;
+            margin: 0 0 8px;
+        }
+
+        .product-info p {
+            color: #806b72;
+            margin: 5px 0;
+        }
+
+        /* CANCEL ORDER BUTTON */
+
+        .cancel-order-form {
+            margin-top: 22px;
+        }
+
+        .cancel-order-btn {
+            padding: 12px 25px;
+            background: #bd7188;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .cancel-order-btn:hover {
+            background: #98546c;
+        }
+
+        .cancelled-message {
+            margin-top: 20px;
+            padding: 14px 18px;
+            background: #fff0f3;
+            border: 1px solid #e8c5d0;
+            border-radius: 10px;
+            color: #98546c;
+            font-weight: bold;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 60px 20px;
+            background: #fff8f8;
+            border-radius: 18px;
+        }
+
+        .empty-orders .icon {
+            font-size: 70px;
+        }
+
+        .empty-orders h2 {
+            color: #593c46;
+        }
+
+        .empty-orders p {
+            color: #806b72;
+        }
+
+        .shop-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 13px 30px;
+            background: #bd7188;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+        }
+
+        @media (max-width: 500px) {
+            .order-product img,
+            .product-placeholder {
+                width: 75px;
+                height: 75px;
+            }
+
+            .order-card {
+                padding: 18px;
+            }
+
+            .tracking-container {
+                margin-left: -5px;
+                margin-right: -5px;
+            }
+
+            .tracking-step p {
+                font-size: 10px;
+            }
+
+            .tracking-circle {
+                width: 32px;
+                height: 32px;
+                font-size: 12px;
+            }
+
+            .tracking-container::before {
+                top: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <section class="orders-banner">
+        <h1>My Orders</h1>
+        <p>Keep track of your Blossom Craft purchases.</p>
+    </section>
+
+    <main class="orders-container">
+
+        <div th:if="${orders != null and !orders.isEmpty()}">
+
+            <div class="order-card" th:each="order : ${orders}">
+
+                <div class="order-header">
+                    <h3>
+                        Order #<span th:text="${order.id}"></span>
+                    </h3>
+
+                    <span class="order-status"
+                          th:text="${order.status}">
+                    </span>
+                </div>
+
+                <div class="order-details">
+
+                    <p>
+                        <strong>Customer:</strong>
+                        <span th:text="${order.customerName}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Mobile:</strong>
+                        <span th:text="${order.mobile}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Delivery Address:</strong>
+                        <span th:text="${order.address}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Order Date:</strong>
+                        <span th:text="${order.orderDate}"></span>
+                    </p>
+
+                </div>
+
+                <!-- PAYMENT METHOD -->
+
+                <div class="payment-info">
+
+                    <strong>Payment Method:</strong>
+
+                    <span class="payment-value"
+                          th:if="${order.paymentMethod == 'COD'}">
+                        Cash on Delivery
+                    </span>
+
+                    <span class="payment-value"
+                          th:if="${order.paymentMethod == 'UPI_DEMO'}">
+                        UPI Payment
+                    </span>
+
+                    <span class="payment-value"
+                          th:if="${order.paymentMethod == 'CARD_DEMO'}">
+                        Debit / Credit Card
+                    </span>
+
+                    <span class="payment-value"
+                          th:if="${order.paymentMethod == null or order.paymentMethod == ''}">
+                        Cash on Delivery
+                    </span>
+
+                    <span class="payment-value"
+                          th:if="${order.paymentMethod != null and order.paymentMethod != '' and order.paymentMethod != 'COD' and order.paymentMethod != 'UPI_DEMO' and order.paymentMethod != 'CARD_DEMO'}"
+                          th:text="${order.paymentMethod}">
+                    </span>
+
+                </div>
+
+                <!-- CANCELLED ORDER MESSAGE -->
+
+                <div class="cancelled-message"
+                     th:if="${order.status == 'Cancelled'}">
+
+                    This order has been cancelled.
+
+                </div>
+
+                <!-- ORDER TRACKING -->
+
+                <div th:unless="${order.status == 'Cancelled'}">
+
+                    <h3 class="tracking-heading">Track Your Order</h3>
+
+                    <div class="tracking-container">
+
+                        <div class="tracking-step"
+                             th:classappend="${order.status == 'Pending' or order.status == 'Confirmed' or order.status == 'Shipped' or order.status == 'Delivered'} ? 'completed' : ''">
+
+                            <div class="tracking-circle">1</div>
+                            <p>Order Placed</p>
+
+                        </div>
+
+                        <div class="tracking-step"
+                             th:classappend="${order.status == 'Confirmed' or order.status == 'Shipped' or order.status == 'Delivered'} ? 'completed' : ''">
+
+                            <div class="tracking-circle">2</div>
+                            <p>Confirmed</p>
+
+                        </div>
+
+                        <div class="tracking-step"
+                             th:classappend="${order.status == 'Shipped' or order.status == 'Delivered'} ? 'completed' : ''">
+
+                            <div class="tracking-circle">3</div>
+                            <p>Shipped</p>
+
+                        </div>
+
+                        <div class="tracking-step"
+                             th:classappend="${order.status == 'Delivered'} ? 'completed' : ''">
+
+                            <div class="tracking-circle">4</div>
+                            <p>Delivered</p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- ORDERED PRODUCTS -->
+
+                <h3 class="product-heading">Ordered Products</h3>
+
+                <div th:if="${order.items != null and !order.items.isEmpty()}">
+
+                    <div class="order-product"
+                         th:each="item : ${order.items}">
+
+                        <img
+                            th:if="${#maps.containsKey(item, 'image') and item.get('image') != null and !item.get('image').toString().isEmpty()}"
+                            th:src="${item.get('image')}"
+                            th:alt="${item.get('name')}">
+
+                        <div class="product-placeholder"
+                             th:unless="${#maps.containsKey(item, 'image') and item.get('image') != null and !item.get('image').toString().isEmpty()}">
+                            🌸
+                        </div>
+
+                        <div class="product-info">
+
+                            <h4 th:text="${item.get('name')}">
+                                Product Name
+                            </h4>
+
+                            <p>
+                                Price: ₹<span th:text="${item.get('price')}"></span>
+                            </p>
+
+                            <p>
+                                Quantity:
+                                <span th:text="${item.get('quantity')}"></span>
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div th:unless="${order.items != null and !order.items.isEmpty()}">
+                    <p>No product details available for this order.</p>
+                </div>
+
+                <div class="order-total">
+                    Total: ₹<span th:text="${order.total}"></span>
+                </div>
+
+                <!-- CANCEL ORDER BUTTON -->
+
+                <form th:if="${order.cancellable}"
+                      th:action="@{/cancel-order}"
+                      method="post"
+                      class="cancel-order-form"
+                      onsubmit="return confirm('Are you sure you want to cancel this order?');">
+
+                    <input type="hidden"
+                           name="orderId"
+                           th:value="${order.id}">
+
+                    <button type="submit" class="cancel-order-btn">
+                        Cancel Order
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <!-- NO ORDERS -->
+
+        <div class="empty-orders"
+             th:if="${orders == null or orders.isEmpty()}">
+
+            <div class="icon">📦</div>
+
+            <h2>No Orders Yet!</h2>
+
+            <p>Your handmade purchases will appear here.</p>
+
+            <a th:href="@{/shop}" class="shop-btn">
+                Start Shopping
+            </a>
+
+        </div>
+
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

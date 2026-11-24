@@ -1,0 +1,379 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Blossom Craft</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap"
+          rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            background: #fff9f7;
+            font-family: 'DM Sans', sans-serif;
+            color: #49383d;
+        }
+
+        .signup-page {
+            min-height: 85vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 55px 20px;
+        }
+
+        .signup-wrapper {
+            width: 100%;
+            max-width: 1000px;
+            display: grid;
+            grid-template-columns: 0.9fr 1.1fr;
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(150, 91, 108, 0.12);
+        }
+
+        /* Left welcome section */
+
+        .signup-welcome {
+            background: linear-gradient(145deg, #f7dce4, #fbece8);
+            padding: 55px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .welcome-flower {
+            font-size: 75px;
+            margin-bottom: 22px;
+        }
+
+        .signup-welcome h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 36px;
+            color: #a85e77;
+            line-height: 1.3;
+            margin: 0 0 15px;
+        }
+
+        .signup-welcome p {
+            color: #795b65;
+            font-size: 15px;
+            line-height: 1.8;
+            max-width: 290px;
+        }
+
+        .welcome-line {
+            width: 55px;
+            height: 3px;
+            background: #bd7188;
+            border-radius: 10px;
+            margin: 15px auto;
+        }
+
+        .welcome-note {
+            margin-top: 30px;
+            color: #a85e77;
+            font-size: 13px;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Right form section */
+
+        .signup-form-section {
+            padding: 45px 55px;
+        }
+
+        .signup-heading {
+            font-family: 'Playfair Display', serif;
+            font-size: 34px;
+            color: #a85e77;
+            margin: 0 0 8px;
+        }
+
+        .signup-subtitle {
+            color: #96858a;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .error-message {
+            background: #fff0f0;
+            color: #c03952;
+            border-radius: 8px;
+            padding: 11px;
+            font-size: 13px;
+            margin-bottom: 18px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 17px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #59444b;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #eadde1;
+            border-radius: 10px;
+            outline: none;
+            background: #fffdfd;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            transition: 0.25s;
+        }
+
+        .input-group input:focus {
+            border-color: #bd7188;
+            box-shadow: 0 0 0 3px rgba(189, 113, 136, 0.10);
+        }
+
+        .input-group input::placeholder {
+            color: #b7a9ad;
+        }
+
+        .signup-button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 8px;
+            background: #bd7188;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .signup-button:hover {
+            background: #a85e77;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(189, 113, 136, 0.22);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 23px;
+            font-size: 13px;
+            color: #88777c;
+        }
+
+        .login-link a {
+            color: #b3637e;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #a85e77;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        @media (max-width: 750px) {
+            .signup-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 500px;
+            }
+
+            .signup-welcome {
+                padding: 30px 20px;
+            }
+
+            .welcome-flower {
+                font-size: 48px;
+                margin-bottom: 10px;
+            }
+
+            .signup-welcome h2 {
+                font-size: 27px;
+            }
+
+            .signup-welcome p {
+                margin-bottom: 5px;
+            }
+
+            .welcome-note {
+                margin-top: 10px;
+            }
+
+            .signup-form-section {
+                padding: 35px 25px;
+            }
+
+            .signup-heading {
+                font-size: 29px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="signup-page">
+
+    <div class="signup-wrapper">
+
+        <!-- Left Welcome Section -->
+
+        <section class="signup-welcome">
+
+            <div class="welcome-flower">🌸</div>
+
+            <h2>Made with Love,<br>Just for You</h2>
+
+            <div class="welcome-line"></div>
+
+            <p>
+                Discover beautiful handmade creations
+                and make every special moment
+                a little more memorable.
+            </p>
+
+            <div class="welcome-note">
+                CREATE · CUSTOMIZE · CELEBRATE
+            </div>
+
+        </section>
+
+        <!-- Right Signup Form -->
+
+        <section class="signup-form-section">
+
+            <h1 class="signup-heading">Create Account</h1>
+
+            <p class="signup-subtitle">
+                Join our little world of handmade happiness.
+            </p>
+
+            <p class="error-message"
+               th:if="${error}"
+               th:text="${error}"></p>
+
+            <form id="signupForm"
+                  th:action="@{/signup}"
+                  method="post">
+
+                <div class="input-group">
+                    <label for="name">Full Name</label>
+                    <input type="text"
+                           id="name"
+                           name="name"
+                           placeholder="Enter your full name"
+                           autocomplete="name"
+                           required>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">Email Address</label>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           placeholder="Enter your email"
+                           autocomplete="email"
+                           required>
+                </div>
+
+                <div class="input-group">
+                    <label for="mobile">Mobile Number</label>
+                    <input type="tel"
+                           id="mobile"
+                           name="mobile"
+                           placeholder="Enter 10-digit mobile number"
+                           pattern="[0-9]{10}"
+                           maxlength="10"
+                           inputmode="numeric"
+                           autocomplete="tel"
+                           required>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password"
+                           id="password"
+                           name="password"
+                           placeholder="Create a password"
+                           minlength="8"
+                           autocomplete="new-password"
+                           required>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password"
+                           id="confirmPassword"
+                           name="confirmPassword"
+                           placeholder="Re-enter your password"
+                           autocomplete="new-password"
+                           required>
+                </div>
+
+                <button type="submit" class="signup-button">
+                    Create My Account →
+                </button>
+
+            </form>
+
+            <p class="login-link">
+                Already have an account?
+                <a href="/login">Login</a>
+            </p>
+
+            <a href="/" class="home-link">
+                ← Back to Home
+            </a>
+
+        </section>
+
+    </div>
+
+</main>
+
+<script>
+    document.getElementById("signupForm").addEventListener("submit", function(event) {
+
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+
+        if (password !== confirmPassword) {
+            event.preventDefault();
+            alert("Passwords do not match!");
+        }
+
+    });
+</script>
+
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+
+</body>
+</html>

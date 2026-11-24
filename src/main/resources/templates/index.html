@@ -1,0 +1,409 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Blossom Craft | Handmade with Love</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+
+    <!-- Instagram Icon -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+        /* HERO SECTION */
+
+        .hero {
+            min-height: 560px;
+            padding: 80px 8%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            background: linear-gradient(120deg, #fff0f3, #fff9f2);
+        }
+
+        .hero-content {
+            max-width: 550px;
+        }
+
+        .hero-content .tag {
+            color: #bd7188;
+            letter-spacing: 3px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .hero-content h1 {
+            font-size: clamp(38px, 5vw, 65px);
+            line-height: 1.15;
+            color: #593c46;
+            margin: 20px 0;
+        }
+
+        .hero-content h1 span {
+            color: #bd7188;
+        }
+
+        .hero-content p {
+            color: #806b72;
+            line-height: 1.9;
+            font-size: 16px;
+        }
+
+        .primary-btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 15px 35px;
+            background: #bd7188;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            transition: 0.3s;
+        }
+
+        .primary-btn:hover {
+            background: #96546b;
+            transform: translateY(-3px);
+        }
+
+        .hero-art {
+            width: 390px;
+            height: 390px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, #f5d3dc, #fce9e7, #fff4ed);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 150px;
+            box-shadow: 0 15px 40px rgba(189, 113, 136, 0.15);
+        }
+
+        /* SECTION COMMON */
+
+        .section {
+            padding: 75px 7%;
+            text-align: center;
+        }
+
+        .section-label {
+            color: #bd7188;
+            letter-spacing: 3px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .section h2 {
+            color: #593c46;
+            font-size: 34px;
+            margin: 12px 0;
+        }
+
+        .section-description {
+            color: #806b72;
+            line-height: 1.8;
+        }
+
+        /* CATEGORIES */
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .category-card {
+            background: #fff6f7;
+            border-radius: 18px;
+            padding: 35px 15px;
+            text-decoration: none;
+            color: #593c46;
+            transition: 0.3s;
+            border: 1px solid #f5e1e6;
+        }
+
+        .category-card:hover {
+            transform: translateY(-7px);
+            box-shadow: 0 10px 25px rgba(189, 113, 136, 0.12);
+        }
+
+        .category-icon {
+            font-size: 55px;
+            margin-bottom: 15px;
+        }
+
+        .category-card h3 {
+            margin: 10px 0;
+            color: #bd7188;
+        }
+
+        .category-card p {
+            color: #806b72;
+            font-size: 14px;
+        }
+
+        /* ABOUT */
+
+        .about-section {
+            background: #fff1f3;
+        }
+
+        .about-content {
+            max-width: 750px;
+            margin: auto;
+        }
+
+        .about-content p {
+            color: #806b72;
+            line-height: 2;
+            font-size: 16px;
+        }
+
+        /* CONTACT */
+
+        .contact-box {
+            max-width: 650px;
+            margin: 30px auto 0;
+            padding: 35px;
+            background: #fff6f7;
+            border-radius: 18px;
+        }
+
+        .contact-box p {
+            color: #806b72;
+            line-height: 1.9;
+        }
+
+        /* CONTACT INSTAGRAM BUTTON */
+
+        .contact-instagram {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 22px;
+            padding: 13px 25px;
+            background: #bd7188;
+            color: white;
+            border-radius: 30px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s ease;
+        }
+
+        .contact-instagram:hover {
+            background: #96546b;
+            transform: translateY(-3px);
+            box-shadow: 0 7px 18px rgba(189, 113, 136, 0.20);
+        }
+
+        .contact-instagram i {
+            font-size: 19px;
+        }
+
+        /* RESPONSIVE */
+
+        @media(max-width: 800px) {
+
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding: 60px 7%;
+            }
+
+            .hero-art {
+                width: 260px;
+                height: 260px;
+                font-size: 100px;
+            }
+
+            .category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 500px) {
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section h2 {
+                font-size: 27px;
+            }
+
+            .contact-box {
+                padding: 25px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- COMMON NAVBAR -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+
+        <div class="hero-content">
+
+            <span class="tag">WELCOME TO BLOSSOM CRAFT</span>
+
+            <h1>
+                Little Flowers,<br>
+                <span>Endless Love.</span>
+            </h1>
+
+            <p>
+                Discover beautiful handmade flowers and thoughtful
+                gifts, carefully created to make your special moments
+                bloom with happiness.
+            </p>
+
+            <a th:href="@{/shop}" class="primary-btn">
+                Explore Collection →
+            </a>
+
+        </div>
+
+        <div class="hero-art">
+            💐
+        </div>
+
+    </section>
+
+
+    <!-- CATEGORIES -->
+    <section class="section">
+
+        <span class="section-label">EXPLORE OUR COLLECTION</span>
+
+        <h2>Something Beautiful for Everyone</h2>
+
+        <p class="section-description">
+            Handmade creations made with care and creativity.
+        </p>
+
+        <div class="category-grid">
+
+            <a th:href="@{/shop}" class="category-card">
+                <div class="category-icon">💐</div>
+                <h3>Flower Bouquets</h3>
+                <p>Flowers that stay forever.</p>
+            </a>
+
+            <a th:href="@{/shop}" class="category-card">
+                <div class="category-icon">🌷</div>
+                <h3>Flower Pots</h3>
+                <p>Little blooms for your space.</p>
+            </a>
+
+            <a th:href="@{/shop}" class="category-card">
+                <div class="category-icon">🔑</div>
+                <h3>Keychains</h3>
+                <p>Cute handmade accessories.</p>
+            </a>
+
+            <a th:href="@{/shop}" class="category-card">
+                <div class="category-icon">💡</div>
+                <h3>Flower Lamps</h3>
+                <p>Beautiful handmade lighting.</p>
+            </a>
+
+            <a th:href="@{/shop}" class="category-card">
+                <div class="category-icon">🌿</div>
+                <h3>Mini Gardens</h3>
+                <p>A little piece of nature.</p>
+            </a>
+
+            <a th:href="@{/shop}" class="category-card">
+                <div class="category-icon">🖼️</div>
+                <h3>Flower Frames</h3>
+                <p>Memories made with flowers.</p>
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- ABOUT -->
+    <section class="section about-section" id="about">
+
+        <div class="about-content">
+
+            <span class="section-label">OUR STORY</span>
+
+            <h2>Handmade with Love ❤️</h2>
+
+            <p>
+                At Blossom Craft, every creation is made with love,
+                patience and creativity. We believe handmade gifts
+                carry special feelings and make memories last longer.
+                Our goal is to bring happiness through beautiful
+                handmade floral creations.
+            </p>
+
+            <a th:href="@{/shop}" class="primary-btn">
+                Discover More
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- CONTACT -->
+    <section class="section" id="contact">
+
+        <span class="section-label">GET IN TOUCH</span>
+
+        <h2>We'd Love to Hear From You</h2>
+
+        <div class="contact-box">
+
+            <div style="font-size:45px;">💌</div>
+
+            <p>
+                Have a question or want something specially
+                handmade for you?
+            </p>
+
+            <p>
+                Contact us for custom orders and enquiries.
+            </p>
+
+            <!-- INSTAGRAM LINK -->
+            <a href="https://www.instagram.com/blossomm.craftt?dmpr=MWR4em96Z2tydGpvbw=="
+               target="_blank"
+               rel="noopener noreferrer"
+               class="contact-instagram">
+
+                <i class="fab fa-instagram"></i>
+                Follow us on Instagram
+
+            </a>
+
+        </div>
+
+    </section>
+
+
+    <!-- COMMON FOOTER -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+
+    <script th:src="@{/js/script.js}"></script>
+
+</body>
+</html>

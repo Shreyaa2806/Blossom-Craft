@@ -1,0 +1,512 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Products | Blossom Craft</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+
+    <style>
+        .manage-container {
+            padding: 45px 7%;
+        }
+
+        .manage-heading {
+            text-align: center;
+            color: #593c46;
+            margin-bottom: 10px;
+        }
+
+        .manage-subtitle {
+            text-align: center;
+            color: #806b72;
+            margin-bottom: 30px;
+        }
+
+        .filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .search-input,
+        .category-filter {
+            padding: 12px 15px;
+            border: 1px solid #e8cbd4;
+            border-radius: 25px;
+            outline: none;
+            font-size: 14px;
+            background: white;
+        }
+
+        .search-input {
+            width: 280px;
+        }
+
+        .category-filter {
+            width: 200px;
+            cursor: pointer;
+        }
+
+        .search-input:focus,
+        .category-filter:focus {
+            border-color: #bd7188;
+        }
+
+        .manage-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .manage-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .manage-table th,
+        .manage-table td {
+            padding: 14px;
+            border-bottom: 1px solid #f1dfe4;
+            text-align: center;
+        }
+
+        .manage-table th {
+            background: #fff0f3;
+            color: #593c46;
+        }
+
+        .manage-table img {
+            width: 65px;
+            height: auto;
+            display: block;
+            margin: auto;
+        }
+
+        .edit-btn,
+        .delete-btn,
+        .stock-btn {
+            border: none;
+            padding: 8px 13px;
+            border-radius: 20px;
+            cursor: pointer;
+            margin: 3px;
+        }
+
+        .edit-btn,
+        .stock-btn {
+            background: #fff0f3;
+            color: #96546b;
+        }
+
+        .delete-btn {
+            background: #bd7188;
+            color: white;
+        }
+
+        .stock-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .in-stock {
+            background: #e4f5e9;
+            color: #287a43;
+        }
+
+        .out-stock {
+            background: #ffe5e5;
+            color: #bd4141;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 25px;
+            color: #806b72;
+        }
+
+        .action-form {
+            display: inline;
+        }
+
+        .image-input {
+            display: none;
+        }
+
+        @media(max-width: 600px) {
+            .manage-container {
+                padding: 30px 4%;
+            }
+
+            .search-input,
+            .category-filter {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <section class="manage-container">
+
+        <h1 class="manage-heading">Manage Products 🌸</h1>
+        <p class="manage-subtitle">View and manage your handmade collection.</p>
+
+        <!-- SEARCH AND CATEGORY FILTER -->
+        <div class="filter-container">
+
+            <input
+                type="text"
+                id="search-product"
+                class="search-input"
+                placeholder="Search product..."
+                oninput="displayProducts()">
+
+            <select
+                id="category-filter"
+                class="category-filter"
+                onchange="displayProducts()">
+
+                <option value="all">All Categories</option>
+                <option value="Bouquet">Bouquets</option>
+                <option value="Pot">Pots</option>
+                <option value="Keychain">Keychains</option>
+                <option value="Lamp">Lamps</option>
+                <option value="Mini Garden">Mini Gardens</option>
+                <option value="Frame">Frames</option>
+
+            </select>
+
+        </div>
+
+        <!-- PRODUCT TABLE -->
+        <div class="manage-table-wrapper">
+
+            <table class="manage-table">
+
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Stock Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody id="product-list">
+
+                    <tr th:each="product : ${products}"
+                        class="product-row"
+                        th:attr="data-name=${product.name},
+                                 data-category=${product.category}">
+
+                        <!-- IMAGE -->
+                        <td>
+                            <img
+                                th:if="${product.image != null and !product.image.isEmpty()}"
+                                th:src="${product.image}"
+                                th:alt="${product.name}">
+
+                            <span
+                                th:if="${product.image == null or product.image.isEmpty()}">
+                                🌸
+                            </span>
+                        </td>
+
+                        <!-- PRODUCT NAME -->
+                        <td th:text="${product.name}">Product Name</td>
+
+                        <!-- CATEGORY -->
+                        <td th:text="${product.category}">Category</td>
+
+                        <!-- PRICE -->
+                        <td th:text="|₹${product.price}|">₹0</td>
+
+                        <!-- QUANTITY -->
+                        <td th:text="${product.stock}">0</td>
+
+                        <!-- STOCK STATUS -->
+                        <td>
+                            <span
+                                th:if="${product.stock > 0}"
+                                class="stock-status in-stock">
+                                In Stock
+                            </span>
+
+                            <span
+                                th:if="${product.stock <= 0}"
+                                class="stock-status out-stock">
+                                Out of Stock
+                            </span>
+                        </td>
+
+                        <!-- ACTIONS -->
+                        <td>
+
+                            <!-- EDIT PRODUCT -->
+                            <form
+                                th:id="|edit-form-${product.id}|"
+                                th:action="@{/admin/products/update}"
+                                method="post"
+                                class="action-form">
+
+                                <input type="hidden" name="id"
+                                       th:value="${product.id}">
+
+                                <input type="hidden" name="price"
+                                       class="edit-price">
+
+                                <input type="hidden" name="description"
+                                       class="edit-description">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    th:attr="data-id=${product.id},
+                                             data-price=${product.price},
+                                             data-description=${product.description}"
+                                    onclick="editProduct(this)">
+                                    Edit
+                                </button>
+
+                            </form>
+
+                            <!-- CHANGE IMAGE -->
+                            <form
+                                th:action="@{/admin/products/change-image}"
+                                method="post"
+                                enctype="multipart/form-data"
+                                class="action-form">
+
+                                <input type="hidden" name="id"
+                                       th:value="${product.id}">
+
+                                <input
+                                    type="file"
+                                    name="image"
+                                    accept="image/*"
+                                    class="image-input"
+                                    required
+                                    onchange="this.form.submit()">
+
+                                <button
+                                    type="button"
+                                    class="edit-btn"
+                                    onclick="this.form.querySelector('input[type=file]').click()">
+                                    Change Image
+                                </button>
+
+                            </form>
+
+                            <!-- UPDATE STOCK -->
+                            <form
+                                th:id="|stock-form-${product.id}|"
+                                th:action="@{/admin/products/update-stock}"
+                                method="post"
+                                class="action-form">
+
+                                <input type="hidden" name="id"
+                                       th:value="${product.id}">
+
+                                <input type="hidden" name="stock"
+                                       class="new-stock">
+
+                                <button
+                                    type="button"
+                                    class="stock-btn"
+                                    th:attr="data-id=${product.id},
+                                             data-stock=${product.stock}"
+                                    onclick="updateStock(this)">
+                                    Update Stock
+                                </button>
+
+                            </form>
+
+                            <!-- DELETE PRODUCT -->
+                            <form
+                                th:action="@{/admin/products/delete}"
+                                method="post"
+                                class="action-form"
+                                onsubmit="return confirmDelete()">
+
+                                <input type="hidden" name="id"
+                                       th:value="${product.id}">
+
+                                <button type="submit" class="delete-btn">
+                                    Delete
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <p id="empty-message" class="empty-message"
+           th:if="${#lists.isEmpty(products)}">
+            No products uploaded yet.
+        </p>
+
+        <p id="no-match-message" class="empty-message"
+           style="display:none;">
+            No matching products found.
+        </p>
+
+    </section>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script>
+
+        // SEARCH AND CATEGORY FILTER
+        function displayProducts() {
+
+            const searchText = document
+                .getElementById("search-product")
+                .value.toLowerCase()
+                .trim();
+
+            const selectedCategory = document
+                .getElementById("category-filter")
+                .value.toLowerCase();
+
+            const rows = document.querySelectorAll(".product-row");
+
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+
+                const name = (row.dataset.name || "").toLowerCase();
+                const category = (row.dataset.category || "").toLowerCase();
+
+                const matchesSearch =
+                    name.includes(searchText) ||
+                    category.includes(searchText);
+
+                const matchesCategory =
+                    selectedCategory === "all" ||
+                    category === selectedCategory;
+
+                if (matchesSearch && matchesCategory) {
+                    row.style.display = "";
+                    visibleCount++;
+                } else {
+                    row.style.display = "none";
+                }
+
+            });
+
+            const noMatchMessage =
+                document.getElementById("no-match-message");
+
+            noMatchMessage.style.display =
+                visibleCount === 0 && rows.length > 0
+                    ? "block"
+                    : "none";
+        }
+
+
+        // EDIT PRODUCT
+        function editProduct(button) {
+
+            const id = button.dataset.id;
+
+            const form = document.getElementById("edit-form-" + id);
+
+            const newPrice = prompt(
+                "Enter new product price:",
+                button.dataset.price
+            );
+
+            if (newPrice === null) return;
+
+            if (
+                newPrice.trim() === "" ||
+                isNaN(newPrice) ||
+                Number(newPrice) <= 0
+            ) {
+                alert("Please enter a valid price.");
+                return;
+            }
+
+            const newDescription = prompt(
+                "Enter new product description:",
+                button.dataset.description || ""
+            );
+
+            if (newDescription === null) return;
+
+            form.querySelector(".edit-price").value =
+                Number(newPrice);
+
+            form.querySelector(".edit-description").value =
+                newDescription;
+
+            form.submit();
+        }
+
+
+        // UPDATE STOCK
+        function updateStock(button) {
+
+            const id = button.dataset.id;
+
+            const form = document.getElementById("stock-form-" + id);
+
+            const newStock = prompt(
+                "Enter available stock quantity:",
+                button.dataset.stock || 0
+            );
+
+            if (newStock === null) return;
+
+            if (
+                newStock.trim() === "" ||
+                !/^\d+$/.test(newStock) ||
+                !Number.isSafeInteger(Number(newStock))
+            ) {
+                alert("Please enter a valid whole number (0 or more).");
+                return;
+            }
+
+            form.querySelector(".new-stock").value =
+                Number(newStock);
+
+            form.submit();
+        }
+
+
+        // DELETE PRODUCT
+        function confirmDelete() {
+
+            return confirm(
+                "Are you sure you want to delete this product?"
+            );
+        }
+
+        // LOAD PAGE
+        document.addEventListener("DOMContentLoaded", displayProducts);
+
+    </script>
+
+</body>
+</html>

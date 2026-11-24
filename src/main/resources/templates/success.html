@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Order Successful | Blossom Craft</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+
+    <style>
+        .success-container {
+            min-height: 550px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 20px;
+            background: linear-gradient(120deg, #fff0f3, #fff9f2);
+        }
+
+        .success-card {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            background: white;
+            padding: 55px 35px;
+            border-radius: 22px;
+            box-shadow: 0 10px 35px rgba(189, 113, 136, 0.12);
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            margin: auto;
+            border-radius: 50%;
+            background: #fce8ed;
+            color: #bd7188;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 55px;
+        }
+
+        .success-card h1 {
+            color: #593c46;
+            margin: 25px 0 12px;
+            font-size: 35px;
+        }
+
+        .success-card p {
+            color: #806b72;
+            line-height: 1.9;
+        }
+
+        .order-id {
+            display: inline-block;
+            margin: 15px 0;
+            padding: 13px 22px;
+            background: #fff0f3;
+            border: 1px solid #f1dfe4;
+            border-radius: 10px;
+            color: #96546b;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .success-btn {
+            display: inline-block;
+            margin: 15px 8px 0;
+            padding: 14px 28px;
+            background: #bd7188;
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+        }
+
+        .success-btn:hover {
+            background: #96546b;
+        }
+
+        .secondary-btn {
+            background: #fff0f3;
+            color: #bd7188;
+        }
+
+        .secondary-btn:hover {
+            background: #f8dfe6;
+        }
+
+        @media(max-width: 500px) {
+            .success-card {
+                padding: 40px 20px;
+            }
+
+            .success-card h1 {
+                font-size: 29px;
+            }
+
+            .success-btn {
+                display: block;
+                margin: 15px 0 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SHARED NAVBAR -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="success-container">
+
+        <div class="success-card">
+
+            <div class="success-icon">✓</div>
+
+            <h1>Order Placed Successfully!</h1>
+
+            <p>
+                Thank you for choosing Blossom Craft.
+                Your order has been received successfully.
+            </p>
+
+            <!-- ORDER ID -->
+            <div class="order-id"
+                 th:if="${param.order != null and param.order[0] == 'placed' and param.id != null}">
+
+                Order ID:
+                <span th:text="${param.id[0]}"></span>
+
+            </div>
+
+            <p>
+                We hope our handmade creations bring
+                happiness to your special moments. 🌸
+            </p>
+
+            <a th:href="@{/orders}" class="success-btn">
+                View My Orders
+            </a>
+
+            <a th:href="@{/shop}" class="success-btn secondary-btn">
+                Continue Shopping
+            </a>
+
+        </div>
+
+    </main>
+
+    <!-- SHARED FOOTER -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- CLEAR CART AFTER SUCCESSFUL ORDER -->
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const params = new URLSearchParams(window.location.search);
+
+            if (params.get("order") === "placed" && params.get("id")) {
+
+                localStorage.removeItem("cart");
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>

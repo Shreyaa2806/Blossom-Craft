@@ -1,0 +1,433 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Wishlist | Blossom Craft</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        .wishlist-banner {
+            text-align: center;
+            padding: 55px 20px;
+            background: linear-gradient(120deg, #fff0f3, #fff9f2);
+        }
+
+        .wishlist-banner h1 {
+            color: #593c46;
+            font-size: 36px;
+        }
+
+        .wishlist-banner p {
+            color: #806b72;
+        }
+
+        .wishlist-container {
+            max-width: 1100px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+
+        .wishlist-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .wishlist-card {
+            background: white;
+            border: 1px solid #f1dfe4;
+            border-radius: 16px;
+            padding: 18px;
+            text-align: center;
+            transition: 0.3s;
+            overflow: hidden;
+        }
+
+        .wishlist-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(189, 113, 136, 0.12);
+        }
+
+        .wishlist-image {
+            width: 100%;
+            height: 230px;
+            object-fit: cover;
+            border-radius: 12px;
+            background: #fff0f3;
+        }
+
+        .wishlist-placeholder {
+            width: 100%;
+            height: 230px;
+            background: #fff0f3;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 65px;
+        }
+
+        .wishlist-card h3 {
+            color: #593c46;
+            margin: 18px 0 10px;
+        }
+
+        .wishlist-description {
+            color: #806b72;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 40px;
+        }
+
+        .wishlist-price {
+            color: #bd7188;
+            font-size: 19px;
+            font-weight: bold;
+            margin: 12px 0;
+        }
+
+        .wishlist-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .move-btn,
+        .remove-btn,
+        .shop-btn {
+            padding: 11px 17px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .move-btn,
+        .shop-btn {
+            background: #bd7188;
+            color: white;
+        }
+
+        .remove-btn {
+            background: #fff0f3;
+            color: #96546b;
+        }
+
+        .move-btn:hover,
+        .shop-btn:hover {
+            background: #96546b;
+        }
+
+        .remove-btn:hover {
+            background: #f8dce5;
+        }
+
+        .wishlist-empty {
+            text-align: center;
+            background: #fff8f8;
+            border: 1px solid #f1dfe4;
+            border-radius: 18px;
+            padding: 65px 20px;
+        }
+
+        .wishlist-icon {
+            font-size: 75px;
+            color: #bd7188;
+        }
+
+        .wishlist-empty h2 {
+            color: #593c46;
+            margin: 20px 0 10px;
+        }
+
+        .wishlist-empty p {
+            color: #806b72;
+            line-height: 1.8;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media(max-width: 800px) {
+            .wishlist-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media(max-width: 500px) {
+            .wishlist-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CURRENT ACCOUNT ID -->
+    <div id="account-context"
+         th:attr="data-user-id=${session.loggedInUserId}"
+         hidden>
+    </div>
+
+    <!-- SHARED NAVBAR -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <!-- WISHLIST BANNER -->
+    <section class="wishlist-banner">
+        <h1>My Wishlist ♡</h1>
+        <p>Your favourite handmade creations in one place.</p>
+    </section>
+
+    <main class="wishlist-container">
+
+        <!-- EMPTY WISHLIST -->
+        <div class="wishlist-empty hidden" id="empty-wishlist">
+
+            <div class="wishlist-icon">♡</div>
+
+            <h2>Your Wishlist is Waiting!</h2>
+
+            <p>
+                You haven't added any favourite products yet.
+                Explore our handmade collection and save the
+                creations you love.
+            </p>
+
+            <a th:href="@{/shop}" class="shop-btn">
+                Explore Products
+            </a>
+
+        </div>
+
+        <!-- WISHLIST PRODUCTS -->
+        <div class="wishlist-grid" id="wishlist-items"></div>
+
+    </main>
+
+    <!-- SHARED FOOTER -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <!-- WISHLIST JAVASCRIPT -->
+    <script>
+
+        // CURRENT LOGGED-IN USER
+        const currentUserId = document
+            .getElementById("account-context")
+            .dataset.userId;
+
+        // UNIQUE WISHLIST KEY FOR EACH ACCOUNT
+        const wishlistStorageKey = currentUserId
+            ? "wishlist_user_" + currentUserId
+            : null;
+
+        // GET WISHLIST
+        function getWishlist() {
+
+            if (!wishlistStorageKey) {
+                return [];
+            }
+
+            return JSON.parse(
+                localStorage.getItem(wishlistStorageKey)
+            ) || [];
+        }
+
+        // SAVE WISHLIST
+        function saveWishlist(wishlist) {
+
+            if (!wishlistStorageKey) {
+                return;
+            }
+
+            localStorage.setItem(
+                wishlistStorageKey,
+                JSON.stringify(wishlist)
+            );
+        }
+
+        // DISPLAY WISHLIST
+        function displayWishlist() {
+
+            let wishlist = getWishlist();
+
+            let container = document.getElementById("wishlist-items");
+
+            let emptyMessage = document.getElementById("empty-wishlist");
+
+            container.innerHTML = "";
+
+            if (wishlist.length === 0) {
+
+                emptyMessage.classList.remove("hidden");
+
+                return;
+            }
+
+            emptyMessage.classList.add("hidden");
+
+            wishlist.forEach((item, index) => {
+
+                let card = document.createElement("div");
+
+                card.className = "wishlist-card";
+
+                // PRODUCT IMAGE
+                if (item.image) {
+
+                    let image = document.createElement("img");
+
+                    image.src = item.image;
+                    image.alt = item.name || "Product";
+                    image.className = "wishlist-image";
+
+                    card.appendChild(image);
+
+                } else {
+
+                    let placeholder = document.createElement("div");
+
+                    placeholder.className = "wishlist-placeholder";
+                    placeholder.textContent = "🌸";
+
+                    card.appendChild(placeholder);
+                }
+
+                // PRODUCT NAME
+                let name = document.createElement("h3");
+
+                name.textContent = item.name || "Handmade Product";
+
+                // PRODUCT DESCRIPTION
+                let description = document.createElement("p");
+
+                description.className = "wishlist-description";
+
+                description.textContent =
+                    item.description || "Beautiful handmade product.";
+
+                // PRODUCT PRICE
+                let price = document.createElement("p");
+
+                price.className = "wishlist-price";
+
+                price.textContent = "₹" + (Number(item.price) || 0);
+
+                // ACTION BUTTONS
+                let actions = document.createElement("div");
+
+                actions.className = "wishlist-actions";
+
+                let moveButton = document.createElement("button");
+
+                moveButton.className = "move-btn";
+                moveButton.textContent = "Add to Cart";
+                moveButton.type = "button";
+
+                moveButton.onclick = () => moveToCart(index);
+
+                let removeButton = document.createElement("button");
+
+                removeButton.className = "remove-btn";
+                removeButton.textContent = "Remove";
+                removeButton.type = "button";
+
+                removeButton.onclick = () => removeWishlist(index);
+
+                actions.appendChild(moveButton);
+                actions.appendChild(removeButton);
+
+                // ADD EVERYTHING TO CARD
+                card.appendChild(name);
+                card.appendChild(description);
+                card.appendChild(price);
+                card.appendChild(actions);
+
+                container.appendChild(card);
+
+            });
+
+        }
+
+        // REMOVE FROM WISHLIST
+        function removeWishlist(index) {
+
+            let wishlist = getWishlist();
+
+            wishlist.splice(index, 1);
+
+            saveWishlist(wishlist);
+
+            displayWishlist();
+
+        }
+
+        // MOVE WISHLIST PRODUCT TO CART
+        function moveToCart(index) {
+
+            let wishlist = getWishlist();
+
+            let item = wishlist[index];
+
+            if (!item) return;
+
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            // CHECK IF PRODUCT ALREADY EXISTS
+            let existing = cart.find(product =>
+                product.id != null && item.id != null
+                    ? Number(product.id) === Number(item.id)
+                    : product.name === item.name
+            );
+
+            if (existing) {
+
+                existing.quantity =
+                    (Number(existing.quantity) || 1) + 1;
+
+            } else {
+
+                cart.push({
+                    id: item.id,
+                    name: item.name,
+                    price: Number(item.price) || 0,
+                    image: item.image || "",
+                    description: item.description || "",
+                    quantity: 1
+                });
+
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            // REMOVE FROM THIS ACCOUNT'S WISHLIST
+            wishlist.splice(index, 1);
+
+            saveWishlist(wishlist);
+
+            alert(item.name + " moved to Cart successfully! 🛒");
+
+            displayWishlist();
+
+        }
+
+        // LOAD WISHLIST WHEN PAGE OPENS
+        document.addEventListener("DOMContentLoaded", displayWishlist);
+
+    </script>
+
+</body>
+</html>

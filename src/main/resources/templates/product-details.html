@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | Blossom Craft</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+
+    <style>
+        .details-container {
+            max-width: 1100px;
+            margin: 60px auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 55px;
+            align-items: center;
+        }
+
+        .details-image {
+            min-height: 420px;
+            background: #fff0f3;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 150px;
+        }
+
+        .details-info .tag {
+            color: #bd7188;
+            letter-spacing: 2px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .details-info h1 {
+            color: #593c46;
+            font-size: 38px;
+            margin: 15px 0;
+        }
+
+        .details-price {
+            color: #bd7188;
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+        .details-info p {
+            color: #806b72;
+            line-height: 1.9;
+        }
+
+        .quantity-label {
+            display: block;
+            margin: 25px 0 8px;
+            color: #593c46;
+            font-weight: bold;
+        }
+
+        .quantity-input {
+            width: 90px;
+            padding: 12px;
+            border: 1px solid #e8cbd4;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .cart-btn {
+            display: inline-block;
+            margin-top: 25px;
+            padding: 14px 30px;
+            background: #bd7188;
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .cart-btn:hover {
+            background: #96546b;
+        }
+
+        @media(max-width: 750px) {
+            .details-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .details-image {
+                min-height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- SHARED NAVBAR -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <main class="details-container">
+
+        <div class="details-image">
+            💐
+        </div>
+
+        <div class="details-info">
+
+            <span class="tag">BLOSSOM CRAFT COLLECTION</span>
+
+            <h1>Beautiful Handmade Creation</h1>
+
+            <div class="details-price">₹250</div>
+
+            <p>
+                Discover our carefully handmade creation, designed
+                with love and creativity. A thoughtful gift for your
+                loved ones and a beautiful addition to your space.
+            </p>
+
+            <p>
+                <strong>Category:</strong> Handmade Gifts
+            </p>
+
+            <form th:action="@{/cart/add}" method="post">
+
+                <label class="quantity-label" for="quantity">
+                    Select Quantity
+                </label>
+
+                <input
+                    class="quantity-input"
+                    type="number"
+                    id="quantity"
+                    name="quantity"
+                    value="1"
+                    min="1"
+                    max="10"
+                    required>
+
+                <button type="submit" class="cart-btn">
+                    Add to Cart
+                </button>
+
+            </form>
+
+        </div>
+
+    </main>
+
+    <!-- SHARED FOOTER -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>

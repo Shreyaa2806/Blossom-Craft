@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Login | Blossom Craft</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background: #fff7f8;
+            color: #49343c;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 420px;
+            background: white;
+            padding: 38px;
+            border-radius: 18px;
+            box-shadow: 0 5px 25px rgba(120, 50, 70, 0.10);
+        }
+
+        h1 {
+            text-align: center;
+            color: #bd6985;
+            font-family: Georgia, serif;
+            margin: 0 0 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #94717e;
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            margin: 16px 0 8px;
+            font-weight: bold;
+            color: #805466;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #e5c5d0;
+            border-radius: 8px;
+            outline: none;
+            font-size: 15px;
+        }
+
+        input:focus {
+            border-color: #bd6985;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #bd6985;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #a94f70;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #28743c;
+        }
+
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 22px;
+            color: #a94f70;
+            text-decoration: none;
+        }
+
+        .home-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+    <h1>Blossom Craft 🌸</h1>
+
+    <p class="subtitle">Admin Login</p>
+
+    <div class="message error"
+         th:if="${error}"
+         th:text="${error}">
+    </div>
+
+    <div class="message success"
+         th:if="${param.logout}">
+        You have successfully logged out.
+    </div>
+
+    <form th:action="@{/admin/login}"
+          method="post"
+          autocomplete="off">
+
+        <label for="email">Admin Email</label>
+
+        <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Enter admin email"
+            autocomplete="off"
+            value=""
+            required>
+
+        <label for="password">Password</label>
+
+        <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="Enter admin password"
+            autocomplete="new-password"
+            value=""
+            required>
+
+        <button type="submit">Login to Dashboard</button>
+
+    </form>
+
+    <a th:href="@{/}" class="home-link">
+        ← Back to Home
+    </a>
+
+</div>
+
+</body>
+</html>

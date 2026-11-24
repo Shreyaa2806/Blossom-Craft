@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Customer Login | Blossom Craft</title>
+
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #fff4f6;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            width: 90%;
+            max-width: 420px;
+            background: white;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 5px 25px rgba(189, 113, 136, 0.15);
+            text-align: center;
+            margin: 75px auto;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: #bd7188;
+        }
+
+        .subtitle {
+            color: #888;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ead1d9;
+            border-radius: 9px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 14px;
+            background: #c77d94;
+            color: white;
+            border: none;
+            border-radius: 9px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .login-button:hover {
+            background: #bd7188;
+        }
+
+        .message {
+            color: #c03955;
+            margin-bottom: 15px;
+        }
+
+        .success {
+            color: #287a48;
+            margin-bottom: 15px;
+        }
+
+        .links {
+            margin-top: 22px;
+            line-height: 2;
+        }
+
+        a {
+            color: #bd7188;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="login-container">
+
+    <div style="font-size:40px;">🌸</div>
+
+    <h1>Customer Login</h1>
+
+    <p class="subtitle">Welcome back to Blossom Craft!</p>
+
+    <p class="message"
+       th:if="${error}"
+       th:text="${error}"></p>
+
+    <p class="success" th:if="${param.registered}">
+        Registration successful! Please login.
+    </p>
+
+    <form th:action="@{/login}"
+          method="post"
+          autocomplete="off"
+          id="loginForm">
+
+        <div class="input-group">
+
+            <label for="email">Email Address</label>
+
+            <input type="email"
+                   id="email"
+                   name="email"
+                   placeholder="Enter your email"
+                   list="savedEmails"
+                   autocomplete="off"
+                   value=""
+                   required>
+
+            <datalist id="savedEmails"></datalist>
+
+        </div>
+
+        <div class="input-group">
+
+            <label for="password">Password</label>
+
+            <input type="password"
+                   id="password"
+                   name="password"
+                   placeholder="Enter your password"
+                   autocomplete="new-password"
+                   required>
+
+        </div>
+
+        <button type="submit" class="login-button">
+            Login
+        </button>
+
+    </form>
+
+    <div class="links">
+        Don't have an account?
+        <a th:href="@{/signup}">Create Account</a>
+        <br>
+        <a th:href="@{/}">← Back to Home</a>
+    </div>
+
+</div>
+
+<script>
+
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const savedEmailsList = document.getElementById("savedEmails");
+    const loginForm = document.getElementById("loginForm");
+
+    const STORAGE_KEY = "blossomCraftSavedEmails";
+
+    // Get all previously saved emails
+    function getSavedEmails() {
+
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        } catch (error) {
+            return [];
+        }
+
+    }
+
+    // Display email suggestions
+    function showEmailSuggestions() {
+
+        const savedEmails = getSavedEmails();
+
+        savedEmailsList.innerHTML = "";
+
+        savedEmails.forEach(function(email) {
+
+            const option = document.createElement("option");
+
+            option.value = email;
+
+            savedEmailsList.appendChild(option);
+
+        });
+
+    }
+
+    // Save email address
+    function saveEmail(email) {
+
+        email = email.trim().toLowerCase();
+
+        if (!email) {
+            return;
+        }
+
+        let savedEmails = getSavedEmails();
+
+        // Remove duplicate email
+        savedEmails = savedEmails.filter(function(item) {
+
+            return item.toLowerCase() !== email;
+
+        });
+
+        // Add latest email first
+        savedEmails.unshift(email);
+
+        // Save all email addresses without any limit
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(savedEmails)
+        );
+
+        showEmailSuggestions();
+
+    }
+
+    // Load saved email suggestions
+    showEmailSuggestions();
+
+    // Clear fields when login page opens or returns from browser history
+    function clearLoginFields() {
+
+        emailInput.value = "";
+        passwordInput.value = "";
+
+    }
+
+    window.addEventListener("pageshow", clearLoginFields);
+
+    // Save email when customer submits login form
+    loginForm.addEventListener("submit", function() {
+
+        if (emailInput.checkValidity()) {
+
+            saveEmail(emailInput.value);
+
+        }
+
+    });
+
+</script>
+
+</body>
+</html>

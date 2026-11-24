@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Product | Blossom Craft</title>
+
+    <!-- COMMON NAVBAR CSS -->
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+
+    <!-- POPPINS FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', Arial, sans-serif;
+            background: #fff7f8;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px #eadde0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #9b536d;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            font-weight: bold;
+            color: #65414e;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #e5cbd4;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #b76e89;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 8px;
+            background: #b76e89;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #9b536d;
+        }
+
+        .message {
+            text-align: center;
+            padding: 10px;
+            margin: 12px 0;
+            border-radius: 8px;
+        }
+
+        .success {
+            background: #e8f7eb;
+            color: #237a37;
+        }
+
+        .error {
+            background: #ffe8e8;
+            color: #c0392b;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #9b536d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        @media (max-width: 650px) {
+            .container {
+                margin: 20px 15px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- COMMON BLOSSOMCRAFT NAVBAR -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container">
+
+    <h1>Add New Product 🌸</h1>
+
+    <!-- SUCCESS MESSAGE -->
+    <div th:if="${successMessage}"
+         th:text="${successMessage}"
+         class="message success">
+    </div>
+
+    <!-- ERROR MESSAGE -->
+    <div th:if="${errorMessage}"
+         th:text="${errorMessage}"
+         class="message error">
+    </div>
+
+    <!-- ADD PRODUCT FORM -->
+    <form id="productForm"
+          th:action="@{/save-product}"
+          action="/save-product"
+          method="POST"
+          enctype="multipart/form-data">
+
+        <input type="hidden" name="name" id="productName">
+
+        <label>Product Price (₹)</label>
+        <input type="number"
+               name="price"
+               id="productPrice"
+               min="1"
+               step="0.01"
+               placeholder="Enter product price"
+               required>
+
+        <label>Product Category</label>
+        <select name="category"
+                id="productCategory"
+                required>
+
+            <option value="">Select Category</option>
+            <option value="Bouquet">Flower Bouquet</option>
+            <option value="Pot">Flower Pot</option>
+            <option value="Keychain">Keychain</option>
+            <option value="Lamp">Flower Lamp</option>
+            <option value="Mini Garden">Mini Garden</option>
+            <option value="Frame">Flower Frame</option>
+
+        </select>
+
+        <label>Product Description</label>
+        <textarea name="description"
+                  id="productDescription"
+                  rows="4"
+                  placeholder="Enter product description"
+                  required></textarea>
+
+        <label>Product Image</label>
+        <input type="file"
+               name="image"
+               id="productImage"
+               accept="image/*"
+               required>
+
+        <button type="submit">Save Product</button>
+
+    </form>
+
+    <a th:href="@{/manage-products}"
+       href="/manage-products"
+       class="back-link">
+        ← Back to Manage Products
+    </a>
+
+</div>
+
+<script>
+document.getElementById("productForm").addEventListener("submit", function(event) {
+
+    const price = Number(
+        document.getElementById("productPrice").value
+    );
+
+    const category = document.getElementById("productCategory");
+
+    const image = document.getElementById("productImage").files[0];
+
+    if (!Number.isFinite(price) || price <= 0) {
+        event.preventDefault();
+        alert("Please enter a valid product price!");
+        return;
+    }
+
+    if (!category.value) {
+        event.preventDefault();
+        alert("Please select a product category!");
+        return;
+    }
+
+    if (!image) {
+        event.preventDefault();
+        alert("Please select a product image!");
+        return;
+    }
+
+    if (!image.type.startsWith("image/")) {
+        event.preventDefault();
+        alert("Please select a valid image file!");
+        return;
+    }
+
+    document.getElementById("productName").value =
+        category.selectedOptions[0].text;
+
+});
+</script>
+
+</body>
+</html>

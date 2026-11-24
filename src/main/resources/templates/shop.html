@@ -1,0 +1,530 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Shop | Blossom Craft</title>
+
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+
+    <style>
+        .shop-banner {
+            text-align: center;
+            padding: 45px 20px;
+            background: transparent;
+        }
+
+        .shop-banner h1 {
+            color: #593c46;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .shop-banner p {
+            color: #806b72;
+        }
+
+        .shop-container {
+            padding: 35px 7%;
+        }
+
+        .shop-heading {
+            text-align: center;
+            color: #593c46;
+            margin-bottom: 25px;
+            font-size: 28px;
+        }
+
+        .shop-search {
+            display: block;
+            width: 280px;
+            max-width: 90%;
+            padding: 12px 18px;
+            margin: 0 auto 25px;
+            border: 1px solid #e8cbd4;
+            border-radius: 25px;
+            outline: none;
+        }
+
+        .category-buttons {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .category-buttons button {
+            padding: 9px 18px;
+            margin: 5px;
+            border: none;
+            border-radius: 25px;
+            background: #fff0f3;
+            color: #96546b;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .category-buttons button:hover,
+        .category-buttons button.active {
+            background: #bd7188;
+            color: white;
+        }
+
+        /* PRODUCT GRID */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 15px;
+            align-items: stretch;
+            max-width: 1050px;
+            margin: auto;
+        }
+
+        /* PRODUCT CARD */
+        .product-card {
+            background: white;
+            border: none;
+            border-radius: 8px;
+            overflow: hidden;
+            text-align: center;
+            padding: 0;
+            margin: 0;
+            min-width: 0;
+        }
+
+        /* FULL PRODUCT IMAGE - NO CROPPING */
+        .new-product-image {
+            width: 100%;
+            height: 260px;
+            object-fit: contain;
+            object-position: center center;
+            display: block;
+            padding: 5px;
+            margin: 0;
+            border: none;
+            border-radius: 0;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        /* PRODUCT DESCRIPTION - HIDDEN ON SHOP */
+        .product-description {
+            display: none !important;
+        }
+
+        /* PRODUCT PRICE */
+        .product-price {
+            color: #593c46 !important;
+            font-size: 19px;
+            font-weight: bold;
+            margin: 10px;
+        }
+
+        /* PRODUCT BUTTONS */
+        .product-actions {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0 18px;
+        }
+
+        .cart-btn,
+        .wishlist-btn {
+            display: inline-block;
+            padding: 9px 14px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .cart-btn {
+            background: #bd7188;
+            color: white;
+        }
+
+        .wishlist-btn {
+            background: #fff0f3;
+            color: #bd7188;
+        }
+
+        .cart-btn:hover {
+            background: #96546b;
+        }
+
+        .wishlist-btn:hover {
+            background: #f8dce5;
+        }
+
+        .cart-btn:disabled {
+            background: #bdbdbd;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .empty-products {
+            text-align: center;
+            color: #806b72;
+            grid-column: 1 / -1;
+            padding: 30px 20px;
+        }
+
+        @media(max-width: 800px) {
+            .shop-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media(max-width: 500px) {
+            .shop-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .new-product-image {
+                height: 200px;
+            }
+
+            .shop-banner h1 {
+                font-size: 30px;
+            }
+
+            .cart-btn,
+            .wishlist-btn {
+                padding: 8px 10px;
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- CURRENT ACCOUNT ID -->
+    <div id="account-context"
+         th:attr="data-user-id=${session.loggedInUserId}"
+         hidden>
+    </div>
+
+    <!-- SHARED NAVBAR -->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+    <!-- SHOP BANNER -->
+    <section class="shop-banner">
+        <h1>Our Handmade Collection</h1>
+        <p>Beautiful creations, made with love just for you.</p>
+    </section>
+
+    <!-- PRODUCTS -->
+    <section class="shop-container">
+
+        <h2 class="shop-heading">Explore Our Products 🌸</h2>
+
+        <!-- SEARCH -->
+        <input type="text"
+               id="search"
+               class="shop-search"
+               placeholder="Search products..."
+               oninput="applyAllFilters()">
+
+        <!-- CATEGORY FILTERS -->
+        <div class="category-buttons">
+
+            <button class="active"
+                    onclick="setCategory('all', this)">
+                All
+            </button>
+
+            <button onclick="setCategory('bouquet', this)">
+                Bouquets
+            </button>
+
+            <button onclick="setCategory('pot', this)">
+                Pots
+            </button>
+
+            <button onclick="setCategory('keychain', this)">
+                Keychains
+            </button>
+
+            <button onclick="setCategory('lamp', this)">
+                Lamps
+            </button>
+
+            <button onclick="setCategory('garden', this)">
+                Mini Gardens
+            </button>
+
+            <button onclick="setCategory('frame', this)">
+                Frames
+            </button>
+
+        </div>
+
+        <!-- PRODUCTS FROM MYSQL -->
+        <div class="shop-grid" id="saved-products">
+
+            <p class="empty-products"
+               th:if="${#lists.isEmpty(products)}">
+                No products available yet. Our handmade creations will appear here once you upload them! 🌸
+            </p>
+
+            <!-- PRODUCT CARD -->
+            <div class="product-card"
+                 th:each="product : ${products}"
+                 th:attr="data-id=${product.id},
+                          data-name=${product.name},
+                          data-category=${product.category},
+                          data-price=${product.price},
+                          data-stock=${product.stock},
+                          data-description=${product.description}">
+
+                <!-- PRODUCT IMAGE -->
+                <img class="new-product-image"
+                     th:if="${product.image != null and !product.image.isEmpty()}"
+                     th:src="${product.image}"
+                     th:alt="${product.name}">
+
+                <!-- HIDDEN DESCRIPTION: USED BY CART AND SEARCH -->
+                <p class="product-description"
+                   th:text="${product.description}">
+                    Product description
+                </p>
+
+                <!-- PRICE -->
+                <p class="product-price">
+                    ₹<span th:text="${product.price}">0</span>
+                </p>
+
+                <!-- ACTION BUTTONS -->
+                <div class="product-actions">
+
+                    <button class="cart-btn"
+                            type="button"
+                            th:if="${product.stock > 0}"
+                            onclick="addSavedToCart(this)">
+                        Add to Cart
+                    </button>
+
+                    <button class="cart-btn"
+                            type="button"
+                            th:if="${product.stock <= 0}"
+                            disabled>
+                        Out of Stock
+                    </button>
+
+                    <button class="wishlist-btn"
+                            type="button"
+                            onclick="addSavedToWishlist(this)">
+                        ♡ Wishlist
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- SHARED FOOTER -->
+    <div th:replace="~{fragments/footer :: footer}"></div>
+
+    <script th:src="@{/js/script.js}"></script>
+
+    <script>
+
+        let selectedCategory = "all";
+
+        // CURRENT LOGGED-IN USER
+        const currentUserId = document
+            .getElementById("account-context")
+            .dataset.userId;
+
+        // UNIQUE WISHLIST KEY FOR EACH ACCOUNT
+        const wishlistStorageKey = currentUserId
+            ? "wishlist_user_" + currentUserId
+            : null;
+
+        // CATEGORY FILTER
+        function setCategory(category, button) {
+
+            selectedCategory = category;
+
+            document.querySelectorAll(".category-buttons button")
+                .forEach(btn => btn.classList.remove("active"));
+
+            button.classList.add("active");
+
+            applyAllFilters();
+        }
+
+        // NORMALIZE CATEGORY
+        function normalizeCategory(category) {
+
+            const value = (category || "").toLowerCase().trim();
+
+            if (value === "mini garden" || value === "mini gardens") {
+                return "garden";
+            }
+
+            return value;
+        }
+
+        // SEARCH AND CATEGORY FILTER
+        function applyAllFilters() {
+
+            const searchValue = document
+                .getElementById("search")
+                .value.toLowerCase().trim();
+
+            const cards = document.querySelectorAll(
+                "#saved-products .product-card"
+            );
+
+            cards.forEach(card => {
+
+                const name = (card.dataset.name || "").toLowerCase();
+
+                const description = (
+                    card.dataset.description || ""
+                ).toLowerCase();
+
+                const category = normalizeCategory(card.dataset.category);
+
+                const matchesSearch =
+                    name.includes(searchValue) ||
+                    description.includes(searchValue);
+
+                const matchesCategory =
+                    selectedCategory === "all" ||
+                    category === selectedCategory;
+
+                card.style.display =
+                    matchesSearch && matchesCategory ? "" : "none";
+
+            });
+        }
+
+        // GET PRODUCT DETAILS FROM CARD
+        function getProductFromCard(button) {
+
+            const card = button.closest(".product-card");
+
+            const image = card.querySelector(".new-product-image");
+
+            return {
+                id: Number(card.dataset.id),
+                name: card.dataset.name || "",
+                price: Number(card.dataset.price),
+                stock: Number(card.dataset.stock),
+                image: image ? image.src : "",
+                description: card.dataset.description || ""
+            };
+        }
+
+        // ADD TO CART
+        function addSavedToCart(button) {
+
+            const product = getProductFromCard(button);
+
+            if (product.stock <= 0) {
+                alert("Sorry! This product is out of stock.");
+                return;
+            }
+
+            let cart = [];
+
+            try {
+                cart = JSON.parse(localStorage.getItem("cart")) || [];
+                if (!Array.isArray(cart)) cart = [];
+            } catch (error) {
+                cart = [];
+            }
+
+            const existing = cart.find(
+                item => Number(item.id) === product.id
+            );
+
+            if (existing) {
+
+                if (existing.quantity >= product.stock) {
+                    alert("Sorry! Available stock limit reached.");
+                    return;
+                }
+
+                existing.quantity = (Number(existing.quantity) || 1) + 1;
+
+                // UPDATE DESCRIPTION FOR EXISTING CART ITEM
+                existing.description = product.description;
+
+                existing.image = product.image;
+
+            } else {
+
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    description: product.description,
+                    quantity: 1
+                });
+
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            alert("Product added to cart! 🛒");
+        }
+
+        // ADD TO ACCOUNT-SPECIFIC WISHLIST
+        function addSavedToWishlist(button) {
+
+            if (!wishlistStorageKey) {
+                alert("Please log in to use your wishlist.");
+                return;
+            }
+
+            const product = getProductFromCard(button);
+
+            let wishlist = [];
+
+            try {
+                wishlist = JSON.parse(
+                    localStorage.getItem(wishlistStorageKey)
+                ) || [];
+
+                if (!Array.isArray(wishlist)) wishlist = [];
+
+            } catch (error) {
+                wishlist = [];
+            }
+
+            if (wishlist.some(item => Number(item.id) === product.id)) {
+                alert("Already in your wishlist! ❤️");
+                return;
+            }
+
+            wishlist.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                description: product.description
+            });
+
+            localStorage.setItem(
+                wishlistStorageKey,
+                JSON.stringify(wishlist)
+            );
+
+            alert("Product added to wishlist! ❤️");
+        }
+
+    </script>
+
+</body>
+</html>
